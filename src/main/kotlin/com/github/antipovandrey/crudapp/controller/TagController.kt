@@ -6,7 +6,7 @@ import com.github.antipovandrey.crudapp.service.TagService
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
-@RequestMapping("tag")
+@RequestMapping("tags")
 @RestController
 class TagController(
         private val tagService: TagService
@@ -14,6 +14,9 @@ class TagController(
 
     @GetMapping
     fun getAll(): List<TagResponse> = tagService.getAll()
+
+    @GetMapping("{name}")
+    fun findTagByName(@PathVariable name: String): List<TagResponse> = tagService.findByName(name)
 
     @PostMapping
     fun createTag(@Valid @RequestBody request: TagRequest): TagResponse = tagService.create(request)

@@ -10,4 +10,6 @@ interface TagService {
     fun findById(id: Int): TagResponse?
 
     fun getAll(): List<TagResponse>
+
+    fun findByName(name: String): List<TagResponse>
 }
