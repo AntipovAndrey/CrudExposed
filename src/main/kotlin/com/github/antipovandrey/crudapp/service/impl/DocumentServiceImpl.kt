@@ -6,7 +6,7 @@ import com.github.antipovandrey.crudapp.dto.response.DocumentResponse
 import com.github.antipovandrey.crudapp.entity.Document
 import com.github.antipovandrey.crudapp.entity.table.Documents
 import com.github.antipovandrey.crudapp.service.DocumentService
-import com.github.antipovandrey.crudapp.service.impl.mapping.fillEntity
+import com.github.antipovandrey.crudapp.service.impl.mapping.fillFromRequest
 import com.github.antipovandrey.crudapp.service.impl.mapping.toResponse
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Service
@@ -17,7 +17,7 @@ class DocumentServiceImpl : DocumentService {
 
     @Transactional
     override fun create(request: DocumentRequest): DocumentResponse {
-        return Document.new { request.fillEntity(this) }
+        return Document.new { fillFromRequest(request) }
                 .toResponse()
     }
 

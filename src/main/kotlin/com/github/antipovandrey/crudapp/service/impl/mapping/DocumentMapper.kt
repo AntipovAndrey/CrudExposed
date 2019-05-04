@@ -6,7 +6,7 @@ import com.github.antipovandrey.crudapp.entity.Document
 
 fun Document.toResponse() = DocumentResponse(id.value, title, content)
 
-fun DocumentRequest.fillEntity(document: Document) {
-    document.title = title!!
-    document.content = content!!
+fun Document.fillFromRequest(request: DocumentRequest) {
+    title = request.title!!
+    content = request.content!!
 }

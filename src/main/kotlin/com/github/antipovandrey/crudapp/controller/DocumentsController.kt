@@ -27,7 +27,5 @@ class DocumentsController(
     }
 
     @PostMapping
-    fun createDocument(@Valid @RequestBody request: DocumentRequest) {
-        documentService.create(request)
-    }
+    fun createDocument(@Valid @RequestBody request: DocumentRequest): DocumentResponse = documentService.create(request)
 }
