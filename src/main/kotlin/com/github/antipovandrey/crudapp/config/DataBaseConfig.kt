@@ -1,20 +1,32 @@
 package com.github.antipovandrey.crudapp.config
 
-import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.spring.SpringTransactionManager
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.ApplicationArguments
-import org.springframework.boot.ApplicationRunner
-import org.springframework.stereotype.Component
+import org.springframework.boot.jdbc.DataSourceBuilder
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import javax.sql.DataSource
 
-@Component
+@Configuration
 class DataBaseConfig(
         @Value("\${crudapp.database.url}") private val url: String,
         @Value("\${crudapp.database.username}") private val userName: String,
         @Value("\${crudapp.database.password}") private val password: String,
         @Value("\${crudapp.database.driver}") private val driverCLassName: String
-) : ApplicationRunner {
+) {
 
-    override fun run(args: ApplicationArguments?) {
-        Database.connect(url, driverCLassName, userName, password)
+    @Bean
+    fun dataSource(): DataSource {
+        return DataSourceBuilder.create()
+                .url(url)
+                .driverClassName(driverCLassName)
+                .username(userName)
+                .password(password)
+                .build()
+    }
+
+    @Bean
+    fun springExposedTransactionManager(dataSource: DataSource): SpringTransactionManager {
+        return SpringTransactionManager(dataSource)
     }
 }
