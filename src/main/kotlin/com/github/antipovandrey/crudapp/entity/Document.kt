@@ -1,5 +1,6 @@
 package com.github.antipovandrey.crudapp.entity
 
+import com.github.antipovandrey.crudapp.entity.table.DocumentTags
 import com.github.antipovandrey.crudapp.entity.table.Documents
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
@@ -10,4 +11,5 @@ class Document(id: EntityID<Int>) : IntEntity(id) {
 
     var title by Documents.title
     var content by Documents.content
+    var tags by Tag via DocumentTags
 }
