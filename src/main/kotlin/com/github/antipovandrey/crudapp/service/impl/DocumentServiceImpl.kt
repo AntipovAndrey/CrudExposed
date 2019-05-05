@@ -10,14 +10,12 @@ import com.github.antipovandrey.crudapp.entity.table.DocumentTags
 import com.github.antipovandrey.crudapp.entity.table.Documents
 import com.github.antipovandrey.crudapp.entity.table.Tags
 import com.github.antipovandrey.crudapp.service.DocumentService
+import com.github.antipovandrey.crudapp.service.impl.exceptions.NotFoundException
 import com.github.antipovandrey.crudapp.service.impl.mapping.fillFromRequest
 import com.github.antipovandrey.crudapp.service.impl.mapping.toResponse
 import org.jetbrains.exposed.dao.load
 import org.jetbrains.exposed.dao.with
-import org.jetbrains.exposed.sql.FieldSet
-import org.jetbrains.exposed.sql.Query
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -31,8 +29,22 @@ class DocumentServiceImpl : DocumentService {
         val document = Document.new {
             fillFromRequest(request)
         }
-        document.tags = Tag.find { Tags.id inList request.tags!! }
+        document.fillTags(request)
         return document.toResponse()
+    }
+
+    @Transactional
+    override fun replace(id: Int, request: DocumentRequest): DocumentResponse {
+        val document = Document.findById(id) ?: throw NotFoundException("Document $id not found")
+        document.fillFromRequest(request)
+        document.fillTags(request)
+        return document.toResponse()
+    }
+
+    @Transactional
+    override fun delete(id: Int) {
+        DocumentTags.deleteWhere { DocumentTags.document eq id }
+        Documents.deleteWhere { Documents.id eq id }
     }
 
     @Transactional
@@ -84,6 +96,10 @@ class DocumentServiceImpl : DocumentService {
                     )
                 }
                 .toList()
+    }
+
+    private fun Document.fillTags(request: DocumentRequest) {
+        tags = Tag.find { Tags.id inList request.tags!! }
     }
 
     private fun nonNullTags(documentRows: List<DocumentRow>): List<Pair<Int, String>> {

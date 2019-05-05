@@ -17,7 +17,7 @@ class DocumentsController(
     @GetMapping
     fun getPreviews(): List<DocumentPreviewResponse> = documentService.getAllPreviews()
 
-    @GetMapping("{id:[0-9]*}")
+    @GetMapping("{id:[0-9]+}")
     fun getDocument(@PathVariable id: Int): ResponseEntity<DocumentResponse> {
         val documentResponse = documentService.findById(id)
         return when (documentResponse) {
@@ -33,4 +33,13 @@ class DocumentsController(
 
     @PostMapping
     fun createDocument(@Valid @RequestBody request: DocumentRequest): DocumentResponse = documentService.create(request)
+
+    @PutMapping("{id:[0-9]+}")
+    fun replaceDocument(
+            @PathVariable id: Int,
+            @Valid @RequestBody request: DocumentRequest
+    ): DocumentResponse = documentService.replace(id, request)
+
+    @DeleteMapping("{id:[0-9]+}")
+    fun deleteDocument(@PathVariable id: Int): Unit = documentService.delete(id)
 }

@@ -8,6 +8,10 @@ interface DocumentService {
 
     fun create(request: DocumentRequest): DocumentResponse
 
+    fun replace(id: Int, request: DocumentRequest): DocumentResponse
+
+    fun delete(id: Int)
+
     fun findById(id: Int): DocumentResponse?
 
     fun getAllPreviews(): List<DocumentPreviewResponse>
