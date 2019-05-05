@@ -14,6 +14,9 @@ import com.github.antipovandrey.crudapp.service.impl.mapping.fillFromRequest
 import com.github.antipovandrey.crudapp.service.impl.mapping.toResponse
 import org.jetbrains.exposed.dao.load
 import org.jetbrains.exposed.dao.with
+import org.jetbrains.exposed.sql.FieldSet
+import org.jetbrains.exposed.sql.Query
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -41,10 +44,26 @@ class DocumentServiceImpl : DocumentService {
 
     @Transactional
     override fun getAllPreviews(): List<DocumentPreviewResponse> {
+        return queryPreviews { selectAll() }
+    }
 
-        return (Documents leftJoin DocumentTags leftJoin Tags)
+    @Transactional
+    override fun getAll(): List<DocumentResponse> {
+        return Document.all()
+                .with(Document::tags)
+                .map { it.toResponse() }
+    }
+
+    @Transactional
+    override fun getPreviewsByTagId(id: Int): List<DocumentPreviewResponse> {
+        return queryPreviews { select { Tags.id eq id } }
+    }
+
+    private inline fun queryPreviews(query: FieldSet.() -> Query): List<DocumentPreviewResponse> {
+        val slice: FieldSet = (Documents leftJoin DocumentTags leftJoin Tags)
                 .slice(Documents.id, Documents.title, Tags.id, Tags.name)
-                .selectAll()
+
+        return slice.query()
                 .asSequence()
                 .map {
                     DocumentRow(
@@ -65,13 +84,6 @@ class DocumentServiceImpl : DocumentService {
                     )
                 }
                 .toList()
-    }
-
-    @Transactional
-    override fun getAll(): List<DocumentResponse> {
-        return Document.all()
-                .with(Document::tags)
-                .map { it.toResponse() }
     }
 
     private fun nonNullTags(documentRows: List<DocumentRow>): List<Pair<Int, String>> {

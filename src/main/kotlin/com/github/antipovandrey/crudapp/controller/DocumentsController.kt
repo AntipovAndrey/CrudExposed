@@ -26,6 +26,11 @@ class DocumentsController(
         }
     }
 
+    @GetMapping("search")
+    fun getPreviewsForTag(
+            @RequestParam("tag") tagId: Int
+    ): List<DocumentPreviewResponse> = documentService.getPreviewsByTagId(tagId)
+
     @PostMapping
     fun createDocument(@Valid @RequestBody request: DocumentRequest): DocumentResponse = documentService.create(request)
 }

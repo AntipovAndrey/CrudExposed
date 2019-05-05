@@ -13,4 +13,6 @@ interface DocumentService {
     fun getAllPreviews(): List<DocumentPreviewResponse>
 
     fun getAll(): List<DocumentResponse>
+
+    fun getPreviewsByTagId(id: Int): List<DocumentPreviewResponse>
 }
